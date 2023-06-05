@@ -13,6 +13,8 @@ vim.o.smartcase = true
 vim.wo.signcolumn = "yes"
 vim.o.termguicolors = true
 
+vim.keymap.set("i","kj","<Esc>")
+
 plugins = {
     {
         "nvim-treesitter/nvim-treesitter",
