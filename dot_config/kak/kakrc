@@ -1,0 +1,45 @@
+set-option global grepcmd 'ag --column'
+
+set-option global ui_options terminal_status_on_top=true
+colorscheme gruvbox-light
+
+add-highlighter global/ show-matching -previous
+
+hook global WinCreate ^[^*]+$ %{ add-highlighter window/ number-lines -hlcursor }
+
+hook global BufOpenFile .* %{ editorconfig-load }
+hook global BufNewFile .* %{ editorconfig-load }
+
+set-face global CurWord +b
+
+hook global NormalIdle .* %{
+    eval -draft %{ try %{
+        exec ,<a-i>w <a-k>\A\w+\z<ret>
+        add-highlighter -override global/curword regex "\b\Q%val{selection}\E\b" 0:CurWord
+    } catch %{
+        add-highlighter -override global/curword group
+    } }
+}
+
+set-face global InsertCursor default,green+B
+
+hook global ModeChange .*:.*:insert %{
+    set-face window PrimaryCursor InsertCursor
+    set-face window PrimaryCursorEol InsertCursor
+}
+
+hook global ModeChange .*:insert:.* %{ try %{
+    unset-face window PrimaryCursor
+    unset-face window PrimaryCursorEol
+} }
+
+map global normal '#' :comment-line<ret>
+
+hook global -always BufOpenFifo '\*grep\*' %{ map global normal <minus> ': grep-next-match<ret>' }
+hook global -always BufOpenFifo '\*make\*' %{ map global normal <minus> ': make-next-error<ret>' }
+
+define-command find -params 1 %{ edit %arg{1} }
+complete-command -menu find shell-script-candidates %{ ag -g '' --ignore "$kak_opt_ignored_files" }
+
+map global user 'f' ':find '
+map global user '/' ':grep '
