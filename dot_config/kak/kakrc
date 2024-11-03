@@ -1,7 +1,8 @@
 set-option global grepcmd 'ag --column'
+set-option global formatcmd 'clang-format --style=gnu'
 
 set-option global ui_options terminal_status_on_top=true
-colorscheme gruvbox-light
+colorscheme base16
 
 add-highlighter global/ show-matching -previous
 
